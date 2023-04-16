@@ -24,44 +24,44 @@ char *permissionString(struct stat fileStat)
         strncat(str, "-", 1);
     }
     // User Permissions
-    if(fileStat.st_mode && S_IRUSR)
+    if(fileStat.st_mode & S_IRUSR)
         strncat(str, "r", 1);
     else
         strncat(str, " -", 1);
-    if(fileStat.st_mode && S_IWUSR)
-        strncat(str, "w", 1)
+    if(fileStat.st_mode & S_IWUSR)
+        strncat(str, "w", 1);
     else
         strncat(str, "-", 1);
-    if(fileStat.st_mode && S_IXUSR)
-        strncat(str, "x", 1)
+    if(fileStat.st_mode & S_IXUSR)
+        strncat(str, "x", 1);
     else
         strncat(str, "-", 1);
 
     // Group permissions
-    if(fileStat.st_mode && S_IRGRP)
-        strncat(str, "r", 1)
+    if(fileStat.st_mode & S_IRGRP)
+        strncat(str, "r", 1);
     else
         strncat(str, "-", 1);
-    if(fileStat.st_mode && S_IWGRP)
-        strncat(str, "w", 1)
+    if(fileStat.st_mode & S_IWGRP)
+        strncat(str, "w", 1);
     else
         strncat(str, "-", 1);
-    if(fileStat.st_mode && S_IXGRP)
-        strncat(str, "x", 1)
+    if(fileStat.st_mode & S_IXGRP)
+        strncat(str, "x", 1);
     else 
         strncat(str, "-", 1);
 
     // Other permissions
-    if(fileStat.st_mode && S_IROTH)
-        strncat(str, "r", 1)
+    if(fileStat.st_mode & S_IROTH)
+        strncat(str, "r", 1);
     else
         strncat(str, "-", 1);
-    if(fileStat.st_mode && S_IWOTH)
-        strncat(str, "w", 1)
+    if(fileStat.st_mode & S_IWOTH)
+        strncat(str, "w", 1);
     else
         strncat(str, "-", 1);
-    if(fileStat.st_mode && S_IXOTH)
-        strncat(str, "x   ", 4)
+    if(fileStat.st_mode & S_IXOTH)
+        strncat(str, "x   ", 4);
     else
         strncat(str, "-   ", 4);
     return str;
@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
     struct passwd *pwd;
     struct group *grp;
     struct tm *t;
-    char target = ".";
+    char *target = ".";
     int iCommand, nCommand, sCommand;
     iCommand = 0;
     nCommand = 0;
@@ -90,43 +90,50 @@ int main(int argc, char *argv[])
         exit(1);
     }
     */
-    if ((dirPtr = opendir(argv[argc - 1])) == NULL)
-    {
-        perror("Error");
-        exit(1);
-    }
-    if (stat(argv[argc - 1], &statBuf) < 0)
+    /*if (stat(argv[argc - 1], &statBuf) < 0)
     {
         perror("huh? there is ");
         exit(1);
-    }
-    for(int i = 0; i < argc; i++){
-        if (!strcmp(argv[i][0], "-")){
-            if(!strcmp(argv[i], "-i")){
-                printf("I is true");
+    }*/
+    for(int i = 1; i < argc; i++){
+        if(!strcmp(argv[i], "-i")){
+                printf("I is true\n");
                 fflush(NULL);
                 iCommand = 1;
-            }
-            else if(!strcmp(argv[i], "-n")){
-                printf("n is true");
+        }
+        else if(!strcmp(argv[i], "-n")){
+                printf("n is true\n");
                 fflush(NULL);
                 nCommand = 1;
-            }
-            else if(!strcmp(argv[i], "-s")){
-                printf("s is true");
+        }
+        else if(!strcmp(argv[i], "-s")){
+                printf("s is true\n");
                 fflush(NULL);
                 sCommand = 1;
-            }
         }
         else{
-            printf("target set");
+            printf("target set ");
             fflush(NULL);
             target = argv[i];
         }
     }
-    printf("%s", target);
+    printf("%s\n", target);
     // Change current working directory
-    chdir(target);
+    if(strcmp(target, "")){
+        chdir(target);
+    }
+    if ((dirPtr = opendir(target)) == NULL)
+    {
+        perror("Error");
+        exit(1);
+    }
+   while ((entryPtr = readdir(dirPtr)))
+        {
+            if (strcmp(entryPtr->d_name, ".") == 0 || strcmp(entryPtr->d_name, "..") == 0)
+                continue;
+            printf("%-10s ", entryPtr->d_name);
+        }
+        printf("\n");
 
     // More error checking
     /*if (argc == 2 && !strstr(argv[1], "/"))
@@ -136,7 +143,7 @@ int main(int argc, char *argv[])
     }
     */
     // When there are no modifiers
-    else if (argc == 2)
+    /*else if (argc == 2)
     {
         while ((entryPtr = readdir(dirPtr)))
         {
@@ -146,6 +153,7 @@ int main(int argc, char *argv[])
         }
         printf("\n");
     }
+    */
     // When all modifiers are included
     /*else if (argc >= 5)
     {
@@ -335,7 +343,6 @@ int main(int argc, char *argv[])
         }
     }
     */
-
     closedir(dirPtr);
     return 0;
 }
