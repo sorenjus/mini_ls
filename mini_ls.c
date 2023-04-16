@@ -14,7 +14,58 @@
 // ./a.out -n /Users/justin/Documents
 
 // Function to determine permissions
-char *permissionString(struct stat fileStat);
+char *permissionString(struct stat fileStat)
+{
+    char *str = malloc(14 * sizeof(char));
+    if(S_ISDIR(fileStat.st_mode)){
+        strncat(str, "d", 1);
+    }
+    else{
+        strncat(str, "-", 1);
+    }
+    // User Permissions
+    if(fileStat.st_mode && S_IRUSR)
+        strncat(str, "r", 1);
+    else
+        strncat(str, " -", 1);
+    if(fileStat.st_mode && S_IWUSR)
+        strncat(str, "w", 1)
+    else
+        strncat(str, "-", 1);
+    if(fileStat.st_mode && S_IXUSR)
+        strncat(str, "x", 1)
+    else
+        strncat(str, "-", 1);
+
+    // Group permissions
+    if(fileStat.st_mode && S_IRGRP)
+        strncat(str, "r", 1)
+    else
+        strncat(str, "-", 1);
+    if(fileStat.st_mode && S_IWGRP)
+        strncat(str, "w", 1)
+    else
+        strncat(str, "-", 1);
+    if(fileStat.st_mode && S_IXGRP)
+        strncat(str, "x", 1)
+    else 
+        strncat(str, "-", 1);
+
+    // Other permissions
+    if(fileStat.st_mode && S_IROTH)
+        strncat(str, "r", 1)
+    else
+        strncat(str, "-", 1);
+    if(fileStat.st_mode && S_IWOTH)
+        strncat(str, "w", 1)
+    else
+        strncat(str, "-", 1);
+    if(fileStat.st_mode && S_IXOTH)
+        strncat(str, "x   ", 4)
+    else
+        strncat(str, "-   ", 4);
+    return str;
+}
 
 // Main driver function to simulate ls
 int main(int argc, char *argv[])
@@ -220,15 +271,9 @@ int main(int argc, char *argv[])
                 char time[26];
 
                 t = localtime(&(statBuf.st_mtime));
-                printf("%-3lld", statBuf.st_blocks);
-                printf("%-3s", str);
-                printf("%-2d", statBuf.st_nlink);
-                printf("%-5u", statBuf.st_uid);
-                printf("%-4u", statBuf.st_gid);
-                printf("%-5lld", statBuf.st_size);
+                printf("%-3lld%-3s%-2d%-5u%-4u%-5lld", statBuf.st_blocks, str, statBuf.st_nlink, statBuf.st_uid, statBuf.st_gid, statBuf.st_size);
                 strftime(time, 26, "%b %d %H:%M  ", t);
-                printf("%-5s", time);
-                printf("%-10s\n", entryPtr->d_name);
+                printf("%-5s%-10s\n", time, entryPtr->d_name);
                 free(str);
             }
         }
@@ -241,7 +286,6 @@ int main(int argc, char *argv[])
                 stat(entryPtr->d_name, &statBuf);
                 char *str = permissionString(statBuf);
                 char time[26];
-                printf("got here");
 
                 t = localtime(&(statBuf.st_mtime));
                 pwd = getpwuid(statBuf.st_uid);
@@ -260,23 +304,3 @@ int main(int argc, char *argv[])
 }
 
 // Function to return a string of user permissions
-char *permissionString(struct stat fileStat)
-{
-    char *str = malloc(14 * sizeof(char));
-    (S_ISDIR(fileStat.st_mode)) ? strncat(str, "d", 1) : strncat(str, "-", 1);
-    // User Permissions
-    (fileStat.st_mode & S_IRUSR) ? strncat(str, "r", 1) : strncat(str, " -", 1);
-    (fileStat.st_mode & S_IWUSR) ? strncat(str, "w", 1) : strncat(str, "-", 1);
-    (fileStat.st_mode & S_IXUSR) ? strncat(str, "x", 1) : strncat(str, "-", 1);
-
-    // Group permissions
-    (fileStat.st_mode & S_IRGRP) ? strncat(str, "r", 1) : strncat(str, "-", 1);
-    (fileStat.st_mode & S_IWGRP) ? strncat(str, "w", 1) : strncat(str, "-", 1);
-    (fileStat.st_mode & S_IXGRP) ? strncat(str, "x", 1) : strncat(str, "-", 1);
-
-    // Other permissions
-    (fileStat.st_mode & S_IROTH) ? strncat(str, "r", 1) : strncat(str, "-", 1);
-    (fileStat.st_mode & S_IWOTH) ? strncat(str, "w", 1) : strncat(str, "-", 1);
-    (fileStat.st_mode & S_IXOTH) ? strncat(str, "x   ", 4) : strncat(str, "-   ", 4);
-    return str;
-}
