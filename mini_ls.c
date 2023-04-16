@@ -75,7 +75,7 @@ char *permissionString(struct stat fileStat)
 int main(int argc, char *argv[])
 {
     // Set up structs
-    DIR *dirPtr;
+    DIR *dirPtr = NULL;
     struct dirent *entryPtr;
     struct stat statBuf;
     struct passwd *pwd;
@@ -109,28 +109,28 @@ int main(int argc, char *argv[])
             target = argv[i];
         }
     }
-    printf("%s\n", target);
-    // Change current working directory
+
     if (strcmp(&target[0], "/"))
     {
         char buff[FILENAME_MAX];
         GetCurrentDir(buff, FILENAME_MAX);
-        printf("Current working dir: %s\n", buff);
-        strcat(buff, "/");
-        strcat(buff, target);
-        printf("target set %s\n", buff);
-        fflush(NULL);
         chdir(buff);
-    }
-    else if (strcmp(target, ""))
-    {
-        chdir(target);
-    }
-    if ((dirPtr = opendir(target)) == NULL)
+        if ((dirPtr = opendir(target)) == NULL)
     {
         perror("Error");
         exit(1);
     }
+    }
+    else if (strcmp(target, ""))
+    {
+        chdir(target);
+        if ((dirPtr = opendir(target)) == NULL)
+    {
+        perror("Error");
+        exit(1);
+    }
+    }
+    
     while ((entryPtr = readdir(dirPtr)))
     {
         if (!strcmp(&entryPtr->d_name[0], ".git") || strcmp(entryPtr->d_name, ".") == 0 || strcmp(entryPtr->d_name, "..") == 0)
