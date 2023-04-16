@@ -77,13 +77,19 @@ int main(int argc, char *argv[])
     struct passwd *pwd;
     struct group *grp;
     struct tm *t;
+    char target = ".";
+    int iCommand, nCommand, sCommand;
+    iCommand = 0;
+    nCommand = 0;
+    sCommand = 0;
 
     // Do some error checking
-    if (argc < 2)
+    /*if (argc < 2)
     {
         printf("Filename required\n");
         exit(1);
     }
+    */
     if ((dirPtr = opendir(argv[argc - 1])) == NULL)
     {
         perror("Error");
@@ -94,16 +100,41 @@ int main(int argc, char *argv[])
         perror("huh? there is ");
         exit(1);
     }
-
+    for(int i = 0; i < argc; i++){
+        if (!strcmp(argv[i][0], "-")){
+            if(!strcmp(argv[i], "-i")){
+                printf("I is true");
+                fflush(NULL);
+                iCommand = 1;
+            }
+            else if(!strcmp(argv[i], "-n")){
+                printf("n is true");
+                fflush(NULL);
+                nCommand = 1;
+            }
+            else if(!strcmp(argv[i], "-s")){
+                printf("s is true");
+                fflush(NULL);
+                sCommand = 1;
+            }
+        }
+        else{
+            printf("target set");
+            fflush(NULL);
+            target = argv[i];
+        }
+    }
+    printf("%s", target);
     // Change current working directory
-    chdir(argv[argc - 1]);
+    chdir(target);
 
     // More error checking
-    if (argc == 2 && !strstr(argv[1], "/"))
+    /*if (argc == 2 && !strstr(argv[1], "/"))
     {
         printf("Add a directory name\n");
         exit(1);
     }
+    */
     // When there are no modifiers
     else if (argc == 2)
     {
@@ -116,7 +147,7 @@ int main(int argc, char *argv[])
         printf("\n");
     }
     // When all modifiers are included
-    else if (argc >= 5)
+    /*else if (argc >= 5)
     {
         if (((argv[1][1] != 'i') && (argv[1][1] != 'n') && (argv[1][1] != 's')) ||
             ((argv[2][1] != 'i') && (argv[2][1] != 'n') && (argv[2][1] != 's')) ||
@@ -144,6 +175,9 @@ int main(int argc, char *argv[])
             free(str);
         }
     }
+    
+    */
+    /*
     // When one modifier is included
     else if (argc == 3)
     {
@@ -225,6 +259,8 @@ int main(int argc, char *argv[])
             break;
         }
     }
+    */
+    /*
     // When two modifiers are included
     else if (argc == 4)
     {
@@ -298,6 +334,7 @@ int main(int argc, char *argv[])
             }
         }
     }
+    */
 
     closedir(dirPtr);
     return 0;
