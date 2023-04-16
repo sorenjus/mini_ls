@@ -131,9 +131,52 @@ int main(int argc, char *argv[])
         {
             if (strcmp(entryPtr->d_name, ".") == 0 || strcmp(entryPtr->d_name, "..") == 0)
                 continue;
-            printf("%-10s ", entryPtr->d_name);
+
+            stat(entryPtr->d_name, &statBuf);
+            if(sCommand == 1){
+                printf("%-4ld", statBuf.st_blocks);
+            }
+            if(nCommand){
+                char *str = permissionString(statBuf);
+                char time[26];
+
+                t = localtime(&(statBuf.st_mtime));
+                printf("%-3s", str);
+                //printf("%-3d", statBuf.st_nlink);
+                printf("%-5u ", statBuf.st_uid);
+                printf("%-4u", statBuf.st_gid);
+                strftime(time, 26, " %b %d %H:%M  ", t);
+                printf("%-5s", time);
+                free(str);
+            }
+            if(iCommand){
+
+            }
+            printf("%-10s\n", entryPtr->d_name);
+            //s = 
+            /*if (strcmp(entryPtr->d_name, ".") == 0 || strcmp(entryPtr->d_name, "..") == 0)
+                    continue;
+                stat(entryPtr->d_name, &statBuf);
+                char *str = permissionString(statBuf);
+                char time[26];
+
+                t = localtime(&(statBuf.st_mtime));
+                printf("%-10llu", statBuf.st_ino);
+                printf("%-3s", str);
+                printf("%-2d", statBuf.st_nlink);
+                pwd = getpwuid(statBuf.st_uid);
+                printf("%-10s", pwd->pw_name);
+                grp = getgrgid(statBuf.st_gid);
+                printf("%-8s", grp->gr_name);
+                printf("%-5lld", statBuf.st_size);
+                strftime(time, 26, "%b %d %H:%M  ", t);
+                printf("%-5s", time);
+                printf("%-10s\n", entryPtr->d_name);
+                free(str);
+                */
         }
-        printf("\n");
+        
+        //printf("\n");
 
     // More error checking
     /*if (argc == 2 && !strstr(argv[1], "/"))
