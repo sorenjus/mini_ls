@@ -13,9 +13,6 @@
 #include <stdio.h>
 #define GetCurrentDir getcwd
 
-// ./a.out -n /Users/justin/Documents
-
-// Function to determine permissions
 char *permissionString(struct stat fileStat)
 {
     char *str = malloc(14 * sizeof(char));
@@ -71,10 +68,8 @@ char *permissionString(struct stat fileStat)
     return str;
 }
 
-// Main driver function to simulate ls
 int main(int argc, char *argv[])
 {
-    // Set up structs
     DIR *dirPtr = NULL;
     struct dirent *entryPtr;
     struct stat statBuf;
@@ -109,7 +104,6 @@ int main(int argc, char *argv[])
             target = argv[i];
         }
     }
-
     if (strcmp(&target[0], "/"))
     {
         char buff[FILENAME_MAX];
@@ -130,7 +124,6 @@ int main(int argc, char *argv[])
         exit(1);
     }
     }
-    
     while ((entryPtr = readdir(dirPtr)))
     {
         if (!strcmp(&entryPtr->d_name[0], ".git") || strcmp(entryPtr->d_name, ".") == 0 || strcmp(entryPtr->d_name, "..") == 0)
@@ -164,7 +157,6 @@ int main(int argc, char *argv[])
 
             free(str);
         }
-
         printf("%-10s\n", entryPtr->d_name);
     }
     closedir(dirPtr);
